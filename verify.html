@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Verify Email | ProjectCreation</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#0e0e0e",
+            "error-container": "#93000a",
+            "background": "#131313",
+            "outline-variant": "#37444b",
+            "surface-container-low": "#1b1b1b",
+            "surface-container-highest": "#353535",
+            "on-surface-variant": "#b2c7d6",
+            "error": "#ffb4ab",
+            "primary": "#e5f5ff",
+            "on-surface": "#e2e2e2",
+            "primary-container": "#2aa8ff",
+            "surface-container-high": "#2a2a2a",
+            "surface": "#131313",
+            "on-background": "#e2e2e2",
+            "outline": "#7e9096",
+            "surface-container": "#1f1f1f",
+            "on-primary": "#003907",
+            "primary-fixed": "#70c8ff",
+            "primary-fixed-dim": "#2aa8ff",
+            "surface-dim": "#131313"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": {
+            "xl": "64px", "md": "24px", "xs": "8px", "lg": "40px",
+            "margin-mobile": "20px", "gutter": "1px", "sm": "16px",
+            "margin-desktop": "48px", "base": "4px"
+          },
+          "fontFamily": {
+            "headline-lg": ["Space Mono"], "headline-sm": ["Space Mono"],
+            "headline-md": ["Space Mono"], "label-md": ["JetBrains Mono"],
+            "body-lg": ["Geist"], "headline-lg-mobile": ["Space Mono"],
+            "label-sm": ["JetBrains Mono"], "body-md": ["Geist"]
+          },
+          "fontSize": {
+            "headline-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+            "headline-sm": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+            "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+            "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+            "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #131313;
+      background-image:
+        linear-gradient(rgba(42, 168, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42, 168, 255, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .otp-input {
+      width: 48px;
+      height: 56px;
+      text-align: center;
+      font-family: "Space Mono", monospace;
+      font-size: 24px;
+      font-weight: 700;
+      background: #0e0e0e;
+      border: 1px solid #37444b;
+      color: #e2e2e2;
+      transition: border-color 150ms ease;
+      caret-color: #2aa8ff;
+    }
+    .otp-input:focus {
+      outline: none;
+      border-color: #2aa8ff;
+    }
+    .otp-input.filled {
+      border-color: #2aa8ff;
+      color: #2aa8ff;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-x-hidden">
+
+  <header class="bg-background border-b border-outline-variant sticky top-0 z-50">
+    <nav class="flex justify-between items-center w-full px-margin-desktop py-base">
+      <a href="/" class="font-headline-sm text-headline-sm font-bold text-on-background tracking-tighter no-underline hover:text-primary-fixed-dim transition-colors">
+        ProjectCreation
+      </a>
+      <a href="/signup.html" class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors">
+        ← Back to signup
+      </a>
+    </nav>
+  </header>
+
+  <main class="flex items-center justify-center min-h-[calc(100vh-57px)] px-margin-mobile py-xl">
+    <div class="w-full max-w-md">
+
+      <div class="border border-outline-variant bg-surface-container p-md md:p-xl">
+
+        <div class="mb-lg">
+          <div class="flex items-center gap-xs mb-sm">
+            <div class="w-2 h-2 bg-primary-fixed-dim animate-pulse"></div>
+            <span class="font-label-sm text-label-sm text-primary-fixed-dim uppercase tracking-widest">Auth_Verify.exe</span>
+          </div>
+          <h1 class="font-headline-md text-headline-md text-on-background">Verify Email</h1>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-xs">
+            We sent a 6-digit code to <span id="emailDisplay" class="text-primary-fixed-dim font-bold"></span>. Enter it below.
+          </p>
+        </div>
+
+        <!-- OTP Input Grid -->
+        <div id="otpRow" class="flex gap-xs justify-center mb-lg" role="group" aria-label="Verification code">
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 1"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 2"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 3"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 4"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 5"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 6"/>
+        </div>
+
+        <div id="errorMsg" class="hidden font-label-sm text-label-sm text-error border border-error-container bg-error-container/10 px-sm py-xs mb-sm"></div>
+        <div id="successMsg" class="hidden font-label-sm text-label-sm text-primary-fixed-dim border border-primary-fixed-dim bg-primary-fixed-dim/10 px-sm py-xs mb-sm"></div>
+
+        <button
+          id="verifyBtn"
+          class="w-full bg-primary-container text-on-primary border border-primary-container font-label-md text-label-md px-md py-sm hover:bg-transparent hover:text-primary-container transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          VERIFY CODE
+        </button>
+
+        <div class="mt-md flex items-center justify-center gap-xs">
+          <span class="font-label-sm text-label-sm text-on-surface-variant">Didn't receive it?</span>
+          <button
+            id="resendBtn"
+            class="font-label-sm text-label-sm text-primary-fixed-dim hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Resend code
+          </button>
+        </div>
+
+      </div>
+
+      <p class="mt-sm font-label-sm text-label-sm text-outline text-center">
+        © 2024 ProjectCreation. Engineered for Digital Craft.
+      </p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      const { createClient } = supabase;
+      const db = createClient(
+        'https://gohyhxqvcjdthxvpewrx.supabase.co',
+        'sb_publishable_rBSID_xnOICGEpVQWPW8KA_FYFSdoS1'
+      );
+
+      // Guard: must arrive from signup
+      const email = sessionStorage.getItem('pendingEmail');
+      if (!email) {
+        window.location.replace('/signup.html');
+      }
+      document.getElementById('emailDisplay').textContent = email;
+
+      // Redirect if already verified and logged in
+      db.auth.getSession().then(({ data: { session } }) => {
+        if (session) window.location.replace('/account.html');
+      });
+
+      // --- OTP input behaviour ---
+      const inputs = Array.from(document.querySelectorAll('.otp-input'));
+      const verifyBtn  = document.getElementById('verifyBtn');
+      const resendBtn  = document.getElementById('resendBtn');
+      const errorMsg   = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+
+      function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+        successMsg.classList.add('hidden');
+      }
+
+      function showSuccess(msg) {
+        successMsg.textContent = msg;
+        successMsg.classList.remove('hidden');
+        errorMsg.classList.add('hidden');
+      }
+
+      function getCode() {
+        return inputs.map(i => i.value).join('');
+      }
+
+      inputs.forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/\D/g, '');
+          input.value = val ? val[0] : '';
+          input.classList.toggle('filled', !!input.value);
+          if (val && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+            inputs[idx - 1].value = '';
+            inputs[idx - 1].classList.remove('filled');
+          }
+          if (e.key === 'Enter') verifyBtn.click();
+        });
+
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData)
+            .getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach((char, i) => {
+            if (inputs[i]) {
+              inputs[i].value = char;
+              inputs[i].classList.add('filled');
+            }
+          });
+          const next = inputs[Math.min(pasted.length, inputs.length - 1)];
+          if (next) next.focus();
+        });
+      });
+
+      // --- Verify ---
+      verifyBtn.addEventListener('click', async () => {
+        errorMsg.classList.add('hidden');
+        const code = getCode();
+
+        if (code.length < 6) {
+          showError('Please enter all 6 digits.');
+          return;
+        }
+
+        verifyBtn.textContent = 'VERIFYING...';
+        verifyBtn.disabled = true;
+
+        const { error } = await db.auth.verifyOtp({
+          email,
+          token: code,
+          type: 'signup'
+        });
+
+        if (error) {
+          showError('Invalid or expired code. Please try again or request a new one.');
+          verifyBtn.textContent = 'VERIFY CODE';
+          verifyBtn.disabled = false;
+          inputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
+          inputs[0].focus();
+          return;
+        }
+
+        sessionStorage.removeItem('pendingEmail');
+        window.location.replace('/account.html');
+      });
+
+      // --- Resend ---
+      let resendCooldown = 0;
+
+      resendBtn.addEventListener('click', async () => {
+        if (resendCooldown > 0) return;
+
+        resendBtn.disabled = true;
+        const { error } = await db.auth.resend({ email, type: 'signup' });
+
+        if (error) {
+          showError('Could not resend code. Please wait a moment and try again.');
+        } else {
+          showSuccess('New code sent — check your inbox.');
+          resendCooldown = 60;
+          const tick = setInterval(() => {
+            resendCooldown--;
+            resendBtn.textContent = resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend code';
+            if (resendCooldown <= 0) {
+              resendBtn.disabled = false;
+              clearInterval(tick);
+            }
+          }, 1000);
+        }
+      });
+
+      inputs[0].focus();
+    })();
+  </script>
+</body>
+</html>

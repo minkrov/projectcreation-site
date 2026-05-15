@@ -1,0 +1,64 @@
+-- ============================================================
+-- ProjectCreation — Supabase RLS Setup
+-- Run this entire file in: Supabase Dashboard → SQL Editor
+-- ============================================================
+
+-- 1. Profiles table (one row per user, auto-created on signup)
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id          UUID        REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email       TEXT        NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Enable Row Level Security — no user can touch another user's data
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- 3. Users can only read their own profile
+CREATE POLICY "select_own_profile"
+  ON public.profiles
+  FOR SELECT
+  USING (auth.uid() = id);
+
+-- 4. Users can only update their own profile
+CREATE POLICY "update_own_profile"
+  ON public.profiles
+  FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- 5. No direct inserts from the client — profile is created via trigger only
+CREATE POLICY "no_direct_insert"
+  ON public.profiles
+  FOR INSERT
+  WITH CHECK (false);
+
+-- 6. No direct deletes from the client — handled via CASCADE from auth.users
+CREATE POLICY "no_direct_delete"
+  ON public.profiles
+  FOR DELETE
+  USING (false);
+
+-- 7. Auto-create a profile row whenever a new user signs up
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$;
+
+-- Revoke public execute to prevent direct calls
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC;
+
+-- Attach the trigger to auth.users
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
