@@ -151,21 +151,26 @@
 
       // Guard: validate session server-side (getUser() hits Supabase on every call,
       // unlike getSession() which only reads the local cache and can be stale).
-      db.auth.getUser().then(({ data: { user }, error }) => {
-        if (error || !user) {
+      db.auth.getUser()
+        .then(({ data: { user }, error }) => {
+          if (error || !user) {
+            window.location.replace('/login.html');
+            return;
+          }
+          document.getElementById('userEmail').textContent = user.email;
+          document.getElementById('userId').textContent = user.id;
+
+          const created = new Date(user.created_at);
+          document.getElementById('memberSince').textContent =
+            created.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+
+          // Only reveal the page after auth is confirmed — prevents flash of unauthenticated shell
+          document.getElementById('mainContent').style.visibility = 'visible';
+        })
+        .catch(() => {
+          // Network error or Supabase unreachable — fail safe to login
           window.location.replace('/login.html');
-          return;
-        }
-        document.getElementById('userEmail').textContent = user.email;
-        document.getElementById('userId').textContent = user.id;
-
-        const created = new Date(user.created_at);
-        document.getElementById('memberSince').textContent =
-          created.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        // Only reveal the page after auth is confirmed — prevents flash of unauthenticated shell
-        document.getElementById('mainContent').style.visibility = 'visible';
-      });
+        });
 
       // Listen for auth changes (e.g. session expiry)
       db.auth.onAuthStateChange((event, session) => {

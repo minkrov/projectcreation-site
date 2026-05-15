@@ -54,3 +54,41 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     Cross-Origin-Resource-Policy = "same-site"
+
+# --- Block sensitive files from being served publicly ---
+# Belt-and-suspenders alongside .netlifyignore
+[[redirects]]
+  from = "/supabase/*"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/PROJECTCREATION_BUILDLOG.md"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.gitignore"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/*.toml"
+  to = "/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/*.sql"
+  to = "/"
+  status = 404
+  force = true
