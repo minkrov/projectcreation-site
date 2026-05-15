@@ -392,6 +392,28 @@
         padding-right: 20px !important;
       }
     }
+
+    /* Profile icon + dropdown */
+    #profileWrapper {
+      position: relative;
+      display: none;
+    }
+    #profileWrapper.visible {
+      display: block;
+    }
+    #profileDropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: 268px;
+      background: #1f1f1f;
+      border: 1px solid #37444b;
+      z-index: 200;
+    }
+    #profileDropdown.open {
+      display: block;
+    }
   </style>
 </head>
 <body class="bg-background text-on-background min-h-screen selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
@@ -408,14 +430,37 @@
         <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Community</a>
       </div>
       <div class="flex items-center gap-sm">
-        <a href="/login.html" class="hidden md:block font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors duration-200">Sign in</a>
-        <a href="/signup.html" class="hidden md:block px-sm py-xs bg-primary-container text-on-primary border border-primary-container font-label-md text-label-md hover:bg-transparent hover:text-primary-container transition-all">CREATE ACCOUNT</a>
+        <a id="navSignIn" href="/login.html" class="hidden md:block font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed-dim transition-colors duration-200">Sign in</a>
+        <a id="navCreateAccount" href="/signup.html" class="hidden md:block px-sm py-xs bg-primary-container text-on-primary border border-primary-container font-label-md text-label-md hover:bg-transparent hover:text-primary-container transition-all">CREATE ACCOUNT</a>
         <button class="p-xs text-primary-fixed-dim hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 opacity-80" type="button" aria-label="Open terminal">
           <span class="material-symbols-outlined">terminal</span>
         </button>
         <button class="p-xs text-primary-fixed-dim hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 opacity-80" type="button" aria-label="Open network status">
           <span class="material-symbols-outlined">sensors</span>
         </button>
+
+        <!-- Profile icon (shown when logged in) -->
+        <div id="profileWrapper">
+          <button id="profileBtn" class="p-xs text-primary-fixed-dim hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 opacity-80" type="button" aria-label="Account">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">account_circle</span>
+          </button>
+          <div id="profileDropdown">
+            <div style="padding:16px;border-bottom:1px solid #37444b;">
+              <p style="margin:0 0 10px 0;font-family:'Courier New',monospace;font-size:10px;color:#2aa8ff;text-transform:uppercase;letter-spacing:0.1em;">&#9646; Session_Active</p>
+              <p style="margin:0 0 4px 0;font-family:'Courier New',monospace;font-size:10px;color:#7e9096;text-transform:uppercase;letter-spacing:0.08em;">Email</p>
+              <p id="dropEmail" style="margin:0 0 12px 0;font-family:'Courier New',monospace;font-size:13px;color:#e2e2e2;word-break:break-all;"></p>
+              <p style="margin:0 0 4px 0;font-family:'Courier New',monospace;font-size:10px;color:#7e9096;text-transform:uppercase;letter-spacing:0.08em;">Account ID</p>
+              <p id="dropId" style="margin:0 0 12px 0;font-family:'Courier New',monospace;font-size:11px;color:#e2e2e2;opacity:0.5;word-break:break-all;"></p>
+              <p style="margin:0 0 4px 0;font-family:'Courier New',monospace;font-size:10px;color:#7e9096;text-transform:uppercase;letter-spacing:0.08em;">Member Since</p>
+              <p id="dropSince" style="margin:0;font-family:'Courier New',monospace;font-size:13px;color:#e2e2e2;"></p>
+            </div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+              <a href="/account.html" style="display:block;text-align:center;background:#1f1f1f;border:1px solid #37444b;color:#e2e2e2;font-family:'Courier New',monospace;font-size:11px;text-decoration:none;padding:8px;text-transform:uppercase;letter-spacing:0.06em;transition:border-color 150ms;">GO TO ACCOUNT →</a>
+              <button id="dropSignOut" style="display:block;width:100%;background:transparent;border:1px solid #37444b;color:#7e9096;font-family:'Courier New',monospace;font-size:11px;padding:8px;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:color 150ms,border-color 150ms;">SIGN OUT</button>
+            </div>
+          </div>
+        </div>
+
         <button class="theme-switch p-xs text-primary-fixed-dim hover:bg-surface-container-highest transition-colors duration-200 active:scale-95 opacity-80 flex items-center justify-center" type="button" aria-label="Switch to red theme" aria-pressed="false" id="themeSwitch">
           <span class="theme-shape" aria-hidden="true"></span>
         </button>
@@ -628,6 +673,72 @@
       </div>
     </div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js" integrity="sha384-4eCDoMN/7A46qQ5Tj0rZ/D2VEolFGNIINDTLAcWZcvhkRSsvTfqNfaBMlRRoGEZ5" crossorigin="anonymous"></script>
+  <script>
+    (() => {
+      const { createClient } = supabase;
+      const db = createClient(
+        'https://gohyhxqvcjdthxvpewrx.supabase.co',
+        'sb_publishable_rBSID_xnOICGEpVQWPW8KA_FYFSdoS1'
+      );
+
+      const profileWrapper    = document.getElementById('profileWrapper');
+      const profileBtn        = document.getElementById('profileBtn');
+      const profileDropdown   = document.getElementById('profileDropdown');
+      const navSignIn         = document.getElementById('navSignIn');
+      const navCreateAccount  = document.getElementById('navCreateAccount');
+      const dropEmail         = document.getElementById('dropEmail');
+      const dropId            = document.getElementById('dropId');
+      const dropSince         = document.getElementById('dropSince');
+      const dropSignOut       = document.getElementById('dropSignOut');
+
+      function showProfile(user) {
+        navSignIn.style.display        = 'none';
+        navCreateAccount.style.display = 'none';
+        profileWrapper.classList.add('visible');
+
+        dropEmail.textContent = user.email;
+        dropId.textContent    = user.id;
+        const d = new Date(user.created_at);
+        dropSince.textContent = d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+      }
+
+      // Check session on load
+      db.auth.getUser().then(({ data: { user } }) => {
+        if (user) showProfile(user);
+      }).catch(() => {});
+
+      // Toggle dropdown
+      profileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('open');
+      });
+
+      // Close on outside click
+      document.addEventListener('click', () => {
+        profileDropdown.classList.remove('open');
+      });
+      profileDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+      // Sign out
+      dropSignOut.addEventListener('click', async () => {
+        await db.auth.signOut();
+        window.location.reload();
+      });
+
+      // React to auth changes (login in another tab, etc.)
+      db.auth.onAuthStateChange((event, session) => {
+        if (session?.user) {
+          showProfile(session.user);
+        } else {
+          profileWrapper.classList.remove('visible');
+          profileDropdown.classList.remove('open');
+          navSignIn.style.display        = '';
+          navCreateAccount.style.display = '';
+        }
+      });
+    })();
+  </script>
   <script>
     (() => {
       const button = document.getElementById("themeSwitch");
