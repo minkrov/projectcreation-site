@@ -171,6 +171,7 @@
       const email = sessionStorage.getItem('pendingEmail');
       if (!email) {
         window.location.replace('/signup.html');
+        return; // stop all further execution — page is navigating away
       }
       document.getElementById('emailDisplay').textContent = email;
 
@@ -278,6 +279,7 @@
         const { error } = await db.auth.resend({ email, type: 'signup' });
 
         if (error) {
+          resendBtn.disabled = false; // re-enable so user can try again
           showError('Could not resend code. Please wait a moment and try again.');
         } else {
           showSuccess('New code sent — check your inbox.');

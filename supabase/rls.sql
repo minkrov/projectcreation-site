@@ -21,11 +21,17 @@ CREATE POLICY "select_own_profile"
   USING (auth.uid() = id);
 
 -- 4. Users can only update their own profile
+--    The WITH CHECK also locks the email column — users cannot change
+--    their profile email to anyone else's address.
+--    Column-level REVOKE (see bottom of file) adds a second line of defence.
 CREATE POLICY "update_own_profile"
   ON public.profiles
   FOR UPDATE
   USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
+  WITH CHECK (
+    auth.uid() = id
+    AND email = (SELECT email FROM auth.users WHERE id = auth.uid())
+  );
 
 -- 5. No direct inserts from the client — profile is created via trigger only
 CREATE POLICY "no_direct_insert"
@@ -55,6 +61,10 @@ $$;
 
 -- Revoke public execute to prevent direct calls
 REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC;
+
+-- Column-level lock: prevent any role from updating the email field directly
+REVOKE UPDATE (email) ON public.profiles FROM authenticated;
+REVOKE UPDATE (email) ON public.profiles FROM anon;
 
 -- Attach the trigger to auth.users
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

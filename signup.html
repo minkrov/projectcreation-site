@@ -223,7 +223,7 @@
 
         // Store email temporarily for the verification step
         sessionStorage.setItem('pendingEmail', email);
-        window.location.href = '/verify.html';
+        window.location.replace('/verify.html');
       });
     })();
   </script>
