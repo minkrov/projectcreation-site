@@ -140,7 +140,7 @@
 
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js" integrity="sha384-4eCDoMN/7A46qQ5Tj0rZ/D2VEolFGNIINDTLAcWZcvhkRSsvTfqNfaBMlRRoGEZ5" crossorigin="anonymous"></script>
   <script>
     (() => {
       const { createClient } = supabase;
@@ -149,14 +149,13 @@
         'sb_publishable_rBSID_xnOICGEpVQWPW8KA_FYFSdoS1'
       );
 
-      // Guard: must be authenticated
-      db.auth.getSession().then(({ data: { session } }) => {
-        if (!session) {
+      // Guard: validate session server-side (getUser() hits Supabase on every call,
+      // unlike getSession() which only reads the local cache and can be stale).
+      db.auth.getUser().then(({ data: { user }, error }) => {
+        if (error || !user) {
           window.location.replace('/login.html');
           return;
         }
-
-        const user = session.user;
         document.getElementById('userEmail').textContent = user.email;
         document.getElementById('userId').textContent = user.id;
 

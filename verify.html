@@ -122,12 +122,12 @@
 
         <!-- OTP Input Grid -->
         <div id="otpRow" class="flex gap-xs justify-center mb-lg" role="group" aria-label="Verification code">
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 1"/>
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 2"/>
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 3"/>
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 4"/>
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 5"/>
-          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" aria-label="Digit 6"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 2"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 3"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 4"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 5"/>
+          <input class="otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="off" aria-label="Digit 6"/>
         </div>
 
         <div id="errorMsg" class="hidden font-label-sm text-label-sm text-error border border-error-container bg-error-container/10 px-sm py-xs mb-sm"></div>
@@ -158,7 +158,7 @@
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js" integrity="sha384-4eCDoMN/7A46qQ5Tj0rZ/D2VEolFGNIINDTLAcWZcvhkRSsvTfqNfaBMlRRoGEZ5" crossorigin="anonymous"></script>
   <script>
     (() => {
       const { createClient } = supabase;
