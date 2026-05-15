@@ -393,6 +393,14 @@
       }
     }
 
+    /* Force JetBrains Mono on all dropdown text — overrides browser/Tailwind button resets */
+    #profileDropdown,
+    #profileDropdown a,
+    #profileDropdown button,
+    #profileDropdown p {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
     /* Profile icon + dropdown */
     #profileWrapper {
       position: relative;
